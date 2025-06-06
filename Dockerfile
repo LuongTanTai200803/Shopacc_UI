@@ -13,7 +13,12 @@ RUN npm ci
 # Copy toàn bộ mã nguồn (bao gồm index.html, vite.config.js, src/)
 COPY . .
 
+# Inject env
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build project
+RUN npm install
 RUN npm run build
 
 # Cài đặt serve để chạy production
