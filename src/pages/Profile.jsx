@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 //import { handlerLogout } from './Home.jsx';
 
+
+const apiUrl = import.meta.env.VITE_API_URL
 export default function Profile() {
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
@@ -41,7 +43,7 @@ export default function Profile() {
         if (!token) {
         navigate('/'); // Nếu không có token, chuyển về trang login
         }else { //Kiểm tra role
-        fetch("http://127.0.0.1:5000/acc/check", {
+        fetch(`${apiUrl}/acc/check`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -60,7 +62,7 @@ export default function Profile() {
     // Hiển thị thông tin user
     const fetchData = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:5000/auth/profile', {
+            const response = await fetch(`${apiUrl}/auth/profile`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -108,7 +110,7 @@ export default function Profile() {
     setError(""); // Reset lỗi trước khi gọi API
     try {
 
-      const response = await fetch('http://127.0.0.1:5000/auth/', {
+      const response = await fetch(`${apiUrl}/auth/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -154,7 +156,7 @@ export default function Profile() {
     setError(""); // Reset lỗi trước khi gọi API
     try {
 
-      const response = await fetch('http://127.0.0.1:5000/acc/', {
+      const response = await fetch(`${apiUrl}/acc/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +192,7 @@ export default function Profile() {
     setError(""); // Reset lỗi trước khi gọi API
     try {
 
-      const response = await fetch(`http://127.0.0.1:5000/acc/${id}`, {
+      const response = await fetch(`${apiUrl}/acc/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

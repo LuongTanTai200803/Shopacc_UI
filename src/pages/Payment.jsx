@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth"
 
-
+const apiUrl = import.meta.env.VITE_API_URL
 export default function Payment() {
     const token = localStorage.getItem('token');
     const { tokenExpired , confirmMessage, user_id } = useAuth(token);
@@ -153,7 +153,7 @@ function Purchase ({ onBack ,tokenExpired, token, user_id}) {
     setError(""); // Reset lỗi trước khi gọi API
     
     try {
-        const response = await fetch('http://127.0.0.1:5000/order/payment', {
+        const response = await fetch(`${apiUrl}/order/payment`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

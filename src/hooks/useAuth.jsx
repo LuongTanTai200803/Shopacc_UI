@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
+const apiUrl = import.meta.env.VITE_API_URL
 export default function useAuth(token) {
   const navigate = useNavigate();
   
@@ -23,7 +23,7 @@ export default function useAuth(token) {
 
     }else { //Kiểm tra tokenExpired
      
-      fetch("http://127.0.0.1:5000/auth/protected", {
+      fetch(`${apiUrl}/auth/protected`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
