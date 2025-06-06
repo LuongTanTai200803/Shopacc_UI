@@ -1,0 +1,16 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+/* Flex layout cho App */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Nội dung chính sẽ mở rộng để đẩy footer xuống */
+.main-content {
+  flex: 1;
+}
