@@ -10,6 +10,8 @@ COPY package*.json ./
 # Cài đặt dependencies
 RUN npm ci
 
+# Copy toàn bộ mã nguồn (bao gồm index.html, vite.config.js, src/)
+COPY . .
 
 # Build project
 RUN npm run build
