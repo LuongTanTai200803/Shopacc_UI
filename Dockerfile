@@ -10,11 +10,6 @@ COPY package*.json ./
 # Cài đặt dependencies
 RUN npm ci
 
-# Copy toàn bộ code
-COPY . .
-
-# Cài đặt plugin React cho Vite
-RUN npm install @vitejs/plugin-react --save-dev
 
 # Build project
 RUN npm run build
@@ -23,4 +18,6 @@ RUN npm run build
 RUN npm install -g serve
 
 # Chạy server với port từ Railway
+ENV PORT=3000
+EXPOSE 3000
 CMD ["serve", "-s", "dist", "-l", "3000"]
