@@ -25,7 +25,7 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    //setIsLoggedIn(false);
+    setIsLoggedIn(false);
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("token");
     setScreen("home");
@@ -73,7 +73,7 @@ export default function Home() {
           const response = await fetch(`${apiUrl}/acc/`, {
               method: 'GET',
               headers: {
-                  Authorization: `Bearer ${token}`
+                 'Content-Type': 'application/json'
               }
           });
 

@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+
+
+//import useAuth from "../hooks/useAuth"
 //import { handlerLogout } from './Home.jsx';
 
 
@@ -9,7 +14,6 @@ export default function Profile() {
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState(null);
     const [tokenExpired, setTokenExpired] = useState(false);
-
     const token = localStorage.getItem('token');
     const [role, setRole] = useState(false);
 
@@ -21,6 +25,8 @@ export default function Profile() {
     const [confirmMessage, setConfirmMessage] = useState('');
     
     const [id, setId] = useState('');
+    const [id_guest, setId_guest] = useState('');
+
     const [hero, setHero] = useState('');
     const [skin, setSkin] = useState('');
     const [price, setPrice] = useState('');
@@ -28,6 +34,13 @@ export default function Profile() {
     const [rank, setRank] = useState('');
     const [image_url, setImage_url] = useState('');
 
+    // Logic
+    const isNormalUser = !role;
+    const shouldShowForm = isNormalUser && showForm;
+    const shouldShowButton = isNormalUser && !showForm;
+
+
+   
     const handleLogout = () => {
         
         localStorage.removeItem("isLoggedIn");
@@ -37,12 +50,13 @@ export default function Profile() {
         console.log("Logout completed, isLoggedIn:", false);
     };
 
-  // Kiểm tra token khi vào 
+    // Kiểm tra token khi vào 
     useEffect(() => {
-    
+      fetchData();
         if (!token) {
         navigate('/'); // Nếu không có token, chuyển về trang login
         }else { //Kiểm tra role
+          
         fetch(`${apiUrl}/acc/check`, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -58,9 +72,44 @@ export default function Profile() {
             }
           });
         } 
-    
+    }, [token]);
+  //Kiểm tra hạn token
+    useEffect(() => {
+
+      const checkToken = () => {
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+              setTokenExpired(true);
+              return;
+          }
+            
+          try {
+              const decoded = jwtDecode(token);
+              const currentTime = Math.floor(Date.now() / 1000);
+              
+              if (decoded.exp < currentTime) {
+                  setTokenExpired(true);
+              }
+              
+          } catch (err) {
+              setTokenExpired(true); // Token lỗi cũng cho hết hạn
+              console.log("catch")
+          }
+      };
+
+      // Kiểm tra ngay khi load
+      checkToken();
+
+      // Kiểm tra định kỳ mỗi 30s
+      const interval = setInterval(checkToken, 30000);
+      
+      return () => clearInterval(interval);
+  }, []);
+
     // Hiển thị thông tin user
     const fetchData = async () => {
+
         try {
             const response = await fetch(`${apiUrl}/auth/profile`, {
                 method: 'GET',
@@ -74,10 +123,10 @@ export default function Profile() {
 
             if (response.ok) {
                 setUserData(data);// Lưu vào state
-                setTokenExpired(false);
+                
             } else {
                 if (data.msg === 'Token has expired') {
-                    setTokenExpired(true);
+                    
                 } else {
                     console.error('Response status:', response.status); // thêm dòng này
                     console.error('Response data:', data); // thêm dòng này
@@ -88,12 +137,11 @@ export default function Profile() {
             console.error('Error:', error);
             setError('Không thể kết nối tới server. Có thể server bị lỗi hoặc bạn đang offline.');
         }
+
     };
-
-        fetchData();
-    }, []);
-
+    
     if (tokenExpired) {
+    console.log("token het han")
         localStorage.removeItem("token");
         return (
             <div>
@@ -116,7 +164,7 @@ export default function Profile() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`, // nếu có token
         },
-        body: JSON.stringify({ coin }),
+        body: JSON.stringify({ coin, id_guest }),
       });
       const data = await response.json();
 
@@ -126,7 +174,7 @@ export default function Profile() {
             ...prev,
             coin: data.coin || (Number(prev.coin) + Number(coin))
           }));
-          setConfirmMessage(`Đã nhận được ${coin} coin`);
+          setConfirmMessage(`User ${id_guest} nhận được ${coin} coin`);
           // Tự động ẩn message sau 5 giây
           setTimeout(() => {
             setConfirmMessage("");
@@ -270,7 +318,9 @@ export default function Profile() {
     <p>Số coin hiện có: {userData.coin}</p>
 
     {/* Nút hiển thị form */}
-    {!showForm ? (
+  <div>
+    {!role &&(
+    !showForm ? (
       <button
         className="btn btn-outline-dark"
         onClick={() => setShowForm(true)}
@@ -279,7 +329,7 @@ export default function Profile() {
       </button>
     ) : (
       // Form nhập số coin
-      <form onSubmit={handleChargeCoin} >
+      <form  >
         <div className="mb-3">
         <img className="card-image_url-top" 
           src="https://res-console.cloudinary.com/dn57gwzff/thumbnails/v1/image/upload/v1749020053/ZG93bmxvYWRfZHY2Y3hm/preview" />
@@ -305,19 +355,68 @@ export default function Profile() {
           Hủy
         </button>
       </form>
-    )}
-    
+      ))}
+      {role &&(
+      !showForm ? (
+         <button
+        className="btn btn-outline-dark"
+        onClick={() => setShowForm(true)}
+      >
+        <i className="bi me-1"></i> Nạp coin
+      </button>
+    ) : (
+      // Form nhập số coin
+      <form onSubmit={handleChargeCoin} >
+        <div className="mb-3">
+        <img className="card-image_url-top"  />
+          <br />
+
+          <label htmlFor="coinInput" className="form-label">Nạp coin cho tài khoản:</label>
+          <input
+            type="text"
+            value={id_guest}
+            onChange={(e) => setId_guest(e.target.value)}
+          /> <br />
+          <span style={{
+            display: 'inline-block',
+            padding: '0px',
+            border: '0px solid #ccc',
+            borderRadius: '10px'
+          }}>
+          <label htmlFor="coinInput" className="form-label">Số coin</label>
+          
+          <input
+            type="text"
+            value={coin}
+            onChange={(e) => setCoin(e.target.value)}
+          /> 
+          </span>
+
+        </div>
+        <button type="submit" className="btn btn-success me-2">Xác nhận</button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => setShowForm(false)}
+        >
+          Hủy
+        </button>
+      </form>
+      
+    ))}
+
+    </div>
     {/* Thông báo sau khi submit */}
     {confirmMessage && (
       <div className="alert alert-info mt-3">
         {confirmMessage}
       </div>
     )}
-  </>
-  ) : (
-    
-    <p>Đang tải dữ liệu...</p>
-  )}
+      </>
+      ) : (
+        
+        <p>Đang tải dữ liệu...</p>
+      )}
     </div>
 
     {role && (
@@ -384,7 +483,12 @@ export default function Profile() {
         </button>
       </form>
       )
-    )} <br />
+    )} 
+    
+    
+    
+    
+    <br />
         {/* Form update account */}
         
     {role && (
