@@ -29,20 +29,15 @@ function App() {
       localStorage.getItem("isLoggedIn") === "true"
     ); // Khởi tạo từ localStorage
   const [tokenExpired, setTokenExpired] = useAuth();
-    if (tokenExpired=="")
-      setTokenExpired(true)
 
   //console.log("isLoggedIn 3: ", isLoggedIn)
   //console.log("check: ", checkToken())
   //console.log("tokenExpired: ", tokenExpired)
-  
 
   useEffect(() => {
     if (token) 
       setIsLoggedIn(true);
-
-    if (tokenExpired)
-      localStorage.removeItem("token");
+    
   }, []);
 
   const handleLogout = () => {

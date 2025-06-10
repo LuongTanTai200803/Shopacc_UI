@@ -11,7 +11,7 @@ export default function useAuth() {
       const checkToken = () => {
 
       const token = localStorage.getItem('token');
-
+      //console.log("token:", token)  
           if (!token) {
               setTokenExpired(true);
               console.log("Khong co token")
