@@ -23,22 +23,23 @@ function App() {
   const [user, setUser] = useState("")
   const token = localStorage.getItem('token');
 
-  const username = localStorage.getItem('username');
-  const coin = localStorage.getItem('coin');
   const [isLoggedIn, setIsLoggedIn] = useState(
       localStorage.getItem("isLoggedIn") === "true"
     ); // Khởi tạo từ localStorage
   const [tokenExpired, setTokenExpired] = useAuth();
-
-  //console.log("isLoggedIn 3: ", isLoggedIn)
+  // console.log("tokenExpired:", tokenExpired)
+  // console.log(token)
   //console.log("check: ", checkToken())
   //console.log("tokenExpired: ", tokenExpired)
-
+  //console.log("isLoggedIn 3: ", isLoggedIn)
   useEffect(() => {
     if (token) 
       setIsLoggedIn(true);
-    
+
+    if (tokenExpired)
+      localStorage.removeItem("token");
   }, []);
+  
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -54,8 +55,7 @@ function App() {
       <Router>
        <Navbar 
           avatar={avatar}
-          username={username}
-          coin={coin}
+          user={user}
           isLoggedIn={isLoggedIn}
           handleLogout={handleLogout}
           setScreen={setScreen}

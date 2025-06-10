@@ -9,7 +9,7 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
 
     const navigate = useNavigate();
 
-    onLoginSuccess=() => {
+    const handleLoginSuccess=() => {
         setIsLoggedIn(true);
         setUser({
             username: localStorage.getItem("username"),
@@ -40,7 +40,7 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
           localStorage.setItem('coin', data.coin);
           console.log("Status code:", response.status);
             //setTimeout(() => { if (onBack) onBack(); // gọi callback để chuyển sang form login }, 2000);
-          if (onLoginSuccess) onLoginSuccess();
+          handleLoginSuccess();
         } else {
             console.error('Response status:', response.status); // thêm dòng này
             console.error('Response data:', data); // thêm dòng này
