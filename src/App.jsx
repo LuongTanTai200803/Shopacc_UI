@@ -25,6 +25,7 @@ function App() {
 
   const username = localStorage.getItem('username');
   const coin = localStorage.getItem('coin');
+  console.log("coin: ", coin)
   const [isLoggedIn, setIsLoggedIn] = useState(
       localStorage.getItem("isLoggedIn") === "true"
     ); // Khởi tạo từ localStorage
