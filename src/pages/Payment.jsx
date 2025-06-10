@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth"
 
-const apiUrl = import.meta.env.VITE_API_URL
-export default function Payment() {
+
+export default function Payment({isLoggedIn}) {
     const token = localStorage.getItem('token');
+    
     const { tokenExpired , confirmMessage, user_id } = useAuth(token);
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [userData, setUserData] = useState(null);
-   
 
     const [screen, setScreen] = useState("payment"); // "payment" "purchase"
     const details_account = JSON.parse(localStorage.getItem("details_account"));
@@ -21,87 +21,36 @@ export default function Payment() {
   //   console.log("name:",details_account.name);
     
   // }
-  const handleLogout = () => {
-    //setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("token");
-    setScreen("home");
-  }
+
   if (screen === "purchase") 
-  return <Purchase
+    return <Purchase
+          navigate={navigate}
           token={token}
           onBack={() => setScreen("payment")}
           // onSwitchToPurchase={() => setScreen("purchase")}
           
          />;
+  
 
   const checkClick = () => {
-      if (tokenExpired)
-        setError(`${confirmMessage}`)
-        
-  setScreen("purchase")
+      if (!isLoggedIn){
+        console.log("isloggedIn checkClick:", isLoggedIn)
+        setError(`Yêu cầu đăng nhập!`)
+        setTimeout(() => {
+            setError("");
+        }, 5000)
+      } else
+        setScreen("purchase")
+      console.log("isloggedIn checkClick:", isLoggedIn)
   };
  
   return(
     <div className="bg-light">
         
-     
-
       {/* nội dung chính */}
-      <h2></h2>
-          {/* Navbar */}
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container px-4 px-lg-5">
-        <a className="navbar-brand" href="/">ShopACC uy tín chất lượng</a>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-            <li className="nav-item"><a className="nav-link active" href="/">Trang chủ</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">Giới thiệu</a></li>
-          </ul>
-          <div className="d-flex">
-            {!tokenExpired && token ? (   // Kiểm tra đăng nhập
-                <>
-                  <button
-                    className="btn btn-outline-dark me-2"
-                    onClick={() => navigate("/profile")} // Điều hướng đến trang hồ sơ
-                  >
-                    <i className="bi bi-person me-1"></i> Hồ sơ
-                  </button>
-                  <button
-                    className="btn btn-outline-dark"
-                    onClick={handleLogout} // Đăng xuất
-                  >
-                    <i className="bi bi-box-arrow-right me-1"></i> Đăng xuất
-                  </button>
-                </>
-              ) : (
-              <>
-                <button className="btn btn-outline-dark me-2" 
-                onClick={() => {
-                  navigate("/", {state : { screen: "signup"}});
-                  }}
-                >
-                  <i className="bi bi-person-plus me-1"></i> Đăng ký
-                </button>
-                <button className="btn btn-outline-dark" 
-                onClick={() => {
-                  navigate("/", {state : { screen: "login"}});
-                  }}
-                >
-                  <i className="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
-                </button>
-              </>
-          )}  
-          </div>
-        </div>
-      </div>
-    </nav>
+      <h2>Thông tin chi tiết tài khoản</h2>
+
+
     <div className="col mb-5">
       <div className="card h-100">
         
@@ -141,13 +90,14 @@ export default function Payment() {
 }
 
 /* Thanh toán */
-function Purchase ({ onBack ,tokenExpired, token, user_id}) {
+function Purchase ({ isLoggedIn, onBack ,tokenExpired, token, user_id, navigate}) {
   const details_account = JSON.parse(localStorage.getItem("details_account"));
   const [error, setError] = useState(""); // Thêm state để lưu lỗi
   const {id: acc_id, price} = details_account;
-
   //console.log("details_account",details_account)
   //console.log("id", acc_id, "price", price)
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Reset lỗi trước khi gọi API
@@ -176,7 +126,7 @@ function Purchase ({ onBack ,tokenExpired, token, user_id}) {
         }
     } catch (error) {
         console.error('Error server not run:', error);
-        setError('Không thể kết nối tới server. Có thể server bị lỗi hoặc bạn đang offline.');
+        setError('catch Không thể kết nối tới server. Có thể server bị lỗi hoặc bạn đang offline.');
     }
 
   };

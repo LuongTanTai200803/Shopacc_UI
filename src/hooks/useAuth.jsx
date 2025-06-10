@@ -1,48 +1,48 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
-const apiUrl = import.meta.env.VITE_API_URL
-export default function useAuth(token) {
-  const navigate = useNavigate();
+
+export default function useAuth() {
+
+  const [tokenExpired, setTokenExpired] = useState("");
   
-  const [tokenExpired, setTokenExpired] = useState(true);
-  const [confirmMessage, setConfirmMessage] = useState("");
-  const [user_id, setUser_id] = useState();
-
   useEffect(() => {
-    
-    if (!token) {
-      
-      //console.error("setConfirmMessage:",token)
-      setConfirmMessage(`Yêu cầu đăng nhập!`);
-      // Tự động ẩn message sau 5 giây
-      setTimeout(() => {
-          setConfirmMessage("");
-      }, 5000);
-      
+      const checkToken = () => {
 
-    }else { //Kiểm tra tokenExpired
-     
-      fetch(`${apiUrl}/auth/protected`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(res => {
-          if (res.status === 200) {
-            setTokenExpired(false);  
-            setUser_id(res.user_id)
-            // console.error('Response status:', res.status); // thêm dòng này
-            // console.error('Response data:', data); // thêm dòng này
-          } else {
-            setTokenExpired(true);
-            console.error(tokenExpired)
+      const token = localStorage.getItem('token');
+
+          if (!token) {
+              setTokenExpired(true);
+              console.log("Khong co token")
+              
+              return;
           }
-          
-          
-        });
-    }   
-  }, []);
+            
+          try {
+              const decoded = jwtDecode(token);
+              const currentTime = Math.floor(Date.now() / 1000);
+              
+              setTokenExpired(decoded.exp < currentTime); // Đặt true nếu hết hạn
+          } catch (err) {
+              setTokenExpired(true); // Token lỗi cho hết hạn
+              console.error('Token error',err)
+          }
+      };
+      
+      checkToken(); // Kiểm tra ngay khi load
+      const interval = setInterval(checkToken, 60000); // Kiểm tra định kỳ mỗi 30s
+      
+      return () => clearInterval(interval);
+    }, []);
 
-  return { tokenExpired , confirmMessage, user_id};
+  return [tokenExpired, setTokenExpired];
+}
+
+
+function checkToken(){
+
+  if (useAuth())
+    return true
+  return false
 }
