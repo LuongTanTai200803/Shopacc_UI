@@ -8,7 +8,9 @@ function Navbar({ avatar, username, coin, isLoggedIn, handleLogout, setScreen })
     handleLogout()
     navigate("/");
   }
-
+  const username = localStorage.getItem('username');
+  const coin = localStorage.getItem('coin');
+  console.log("coin: ",localStorage.getItem('coin'))
   //console.log("token: ", localStorage.getItem("token"))
   return ( <nav className="navbar navbar-expand-lg custom-navbar">
     <div className="container px-4 px-lg-5">
