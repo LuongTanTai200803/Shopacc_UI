@@ -2,11 +2,12 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { data, useNavigate } from "react-router-dom";
 import Profile from './Profile';
+import avatar from '../assets/images/default-avatar.png';
+import Navbar  from "../components/Navbar";
 
-const apiUrl = import.meta.env.VITE_API_URL
-console.log("API URL:", apiUrl)
 
-export default function Home() {
+
+export default function Home({apiUrl}) {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [screen, setScreen] = useState("home"); // "home", "signup", "login"
@@ -15,22 +16,11 @@ export default function Home() {
   ); // Khởi tạo từ localStorage
   const [tokenExpired, setTokenExpired] = useState(false);
   const token = localStorage.getItem('token');
-
+  const username = localStorage.getItem('username');
+  const coin = localStorage.getItem('coin');
 
   const [accounts, setAccounts] = useState([]);
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true); // Cập nhật trạng thái đăng nhập
-    setScreen("home"); // Quay lại màn hình chính
-    localStorage.setItem("isLoggedIn", "true"); // Lưu trạng thái vào localStorage
-  };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("token");
-    setScreen("home");
-
-  };
   // Kiểm tra token login
   useEffect(() => {
     if (token) { //Kiểm tra có token hay không
@@ -106,6 +96,7 @@ export default function Home() {
     }
   }, [location.state]);
 
+    
     if (screen === "signup") 
       return <Signup
               onBack={() => setScreen("home")}
@@ -123,55 +114,12 @@ export default function Home() {
       return <Profile setScreen={setScreen} />;
     }
   
-
+  
 
   return (
   <div className="bg-light">
     {/* Navbar */}
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container px-4 px-lg-5">
-        <a className="navbar-brand" href="/">ShopACC uy tín chất lượng</a>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-            <li className="nav-item"><a className="nav-link active" href="/">Trang chủ</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">Giới thiệu</a></li>
-          </ul>
-          <div className="d-flex">
-            {isLoggedIn && localStorage.getItem("token") ? (   // Kiểm tra đăng nhập
-                <>
-                  <button
-                    className="btn btn-outline-dark me-2"
-                    onClick={() => navigate("/profile")} // Điều hướng đến trang hồ sơ
-                  >
-                    <i className="bi bi-person me-1"></i> Hồ sơ
-                  </button>
-                  <button
-                    className="btn btn-outline-dark"
-                    onClick={handleLogout} // Đăng xuất
-                  >
-                    <i className="bi bi-box-arrow-right me-1"></i> Đăng xuất
-                  </button>
-                </>
-              ) : (
-              <>
-                <button className="btn btn-outline-dark me-2" onClick={() => setScreen("signup")}>
-                  <i className="bi bi-person-plus me-1"></i> Đăng ký
-                </button>
-                <button className="btn btn-outline-dark" onClick={() => setScreen("login")}>
-                  <i className="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
-                </button>
-              </>
-          )}  
-          </div>
-        </div>
-      </div>
-    </nav>
+  
 
     {/* Header */}
     <header className="bg-dark py-5">
@@ -245,188 +193,3 @@ function ProductCard({ id, name, price, image_url, status, hero, skin, navigate 
 }
 
 
-function Signup({ onBack, onSwitchToSignup, onSwitchToLogin}) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState(""); // Thêm state để lưu lỗi
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(""); // Reset lỗi trước khi gọi API
-
-    try {
-        const response = await fetch(`${apiUrl}/auth/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            setError('Đăng ký thành công! Vui lòng đăng nhập.');
-            setTimeout(() => {
-              if (onSwitchToLogin) onSwitchToLogin(); // gọi callback để chuyển sang form login
-            }, 2000);
-        } else {
-            console.error('Response status:', response.status); // thêm dòng này
-            console.error('Response data:', data); // thêm dòng này
-            setError(data.msg || data.message || 'Đăng ký thất bại');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        setError('Không thể kết nối tới server. Có thể server bị lỗi hoặc bạn đang offline.');
-    }
-
-  };
-
-  return (
-    <div className="card p-4 shadow bg-white" style={{ maxWidth: "400px", margin: "0 auto" }}>
-      <h2 className="text-center mb-4">Tạo tài khoản mới</h2>
-
-      {error && (
-        <div className="alert alert-warning py-2 text-center" role="alert">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Tên đăng nhập"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <input
-            type="password"
-            className="form-control"
-            placeholder="Nhập mật khẩu"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="password"
-            className="form-control"
-            placeholder="Nhập lại mật khẩu"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <button type="submit" className="btn btn btn-success w-100" >
-          Đăng Ký
-        </button>
-
-        </form> &nbsp;
-      <button className="btn btn-primary" onClick={onSwitchToLogin}>
-          Đăng nhập
-      </button>
-        <br />
-      <button className="btn btn-sm btn-outline-secondary mt-2" onClick={onBack}>
-          ← Quay lại Trang chính
-      </button>
-      </div>
-  );
-}
-
-function Login({ onBack, onSwitchToSignup ,onSwitchToLogin, onLoginSuccess}) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // Thêm state để lưu lỗi
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(""); // Reset lỗi trước khi gọi API
-
-    try {
-        const response = await fetch(`${apiUrl}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Kiểm tra token trước khi lưu
-          localStorage.setItem('token', data.access_token); // lưu token
-          console.log("Status code:", response.status);
-            //setTimeout(() => { if (onBack) onBack(); // gọi callback để chuyển sang form login }, 2000);
-          if (onLoginSuccess) onLoginSuccess();
-        } else {
-            console.error('Response status:', response.status); // thêm dòng này
-            console.error('Response data:', data); // thêm dòng này
-            setError(data.msg || data.message || 'Đăng nhập thất bại');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        setError('Không thể kết nối tới server. Có thể server bị lỗi hoặc bạn đang offline.');
-    }
-
-
-  };
-
-  return (
-    <div className="card p-4 shadow bg-white" style={{ maxWidth: "400px", margin: "0 auto" }}>
-      <h2 className="text-center mb-4">Tạo tài khoản mới</h2>
-
-        {error && (
-          <div className="alert alert-warning py-2 text-center" role="alert">
-            {error}
-          </div>
-        )}
-      
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Nhập username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Nhập mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-        <button type="submit" className="btn btn-primary w-100" >
-          Đăng Nhập
-        </button>
-
-        </form> &nbsp;
-      <button className="btn btn-success" onClick={onSwitchToSignup}>
-          Đăng Ký
-      </button>
-        <br />
-      <button className="btn btn-sm btn-outline-secondary mt-2" onClick={onBack}>
-          ← Quay lại Trang chính
-      </button>
-      </div>
-  );
-}

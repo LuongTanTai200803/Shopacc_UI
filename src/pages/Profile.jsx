@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-
 
 
 //import useAuth from "../hooks/useAuth"
@@ -9,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 
 
 const apiUrl = import.meta.env.VITE_API_URL
-export default function Profile() {
+export default function Profile({ isLoggedIn, apiUrl}) {
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState(null);
@@ -40,16 +38,6 @@ export default function Profile() {
     const shouldShowButton = isNormalUser && !showForm;
 
 
-   
-    const handleLogout = () => {
-        
-        localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("token");
-        
-        navigate("/")
-        console.log("Logout completed, isLoggedIn:", false);
-    };
-
     // Kiểm tra token khi vào 
     useEffect(() => {
       fetchData();
@@ -73,39 +61,7 @@ export default function Profile() {
           });
         } 
     }, [token]);
-  //Kiểm tra hạn token
-    useEffect(() => {
 
-      const checkToken = () => {
-          const token = localStorage.getItem("token");
-
-          if (!token) {
-              setTokenExpired(true);
-              return;
-          }
-            
-          try {
-              const decoded = jwtDecode(token);
-              const currentTime = Math.floor(Date.now() / 1000);
-              
-              if (decoded.exp < currentTime) {
-                  setTokenExpired(true);
-              }
-              
-          } catch (err) {
-              setTokenExpired(true); // Token lỗi cũng cho hết hạn
-              console.log("catch")
-          }
-      };
-
-      // Kiểm tra ngay khi load
-      checkToken();
-
-      // Kiểm tra định kỳ mỗi 30s
-      const interval = setInterval(checkToken, 30000);
-      
-      return () => clearInterval(interval);
-  }, []);
 
     // Hiển thị thông tin user
     const fetchData = async () => {
@@ -140,9 +96,9 @@ export default function Profile() {
 
     };
     
-    if (tokenExpired) {
+    if (!isLoggedIn) {
     console.log("token het han")
-        localStorage.removeItem("token");
+    
         return (
             <div>
                 
@@ -274,41 +230,7 @@ export default function Profile() {
   // Return origin
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container px-4 px-lg-5">
-        <a className="navbar-brand" href="/">ShopACC uy tín chất lượng</a>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-            <li className="nav-item"><a className="nav-link active" href="/">Trang chủ</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">Giới thiệu</a></li>
-          </ul>
-          <div className="d-flex"> 
-            {token && (   // Kiểm tra đăng nhập
-                <>
-                  <button
-                    className="btn btn-outline-dark me-2"
-                    onClick={() => navigate("/profile")} // Điều hướng đến trang hồ sơ
-                  >
-                    <i className="bi bi-person me-1"></i> Hồ sơ
-                  </button>
-                  <button
-                    className="btn btn-outline-dark"
-                    onClick={handleLogout} // Đăng xuất
-                  >
-                    <i className="bi bi-box-arrow-right me-1"></i> Đăng xuất
-                  </button>
-                </>
-              ) }  
-          </div>
-        </div>
-      </div>
-    </nav>
+     
 
     <div>
 {userData ? (
@@ -332,7 +254,7 @@ export default function Profile() {
       <form  >
         <div className="mb-3">
         <img className="card-image_url-top" 
-          src="https://res-console.cloudinary.com/dn57gwzff/thumbnails/v1/image/upload/v1749020053/ZG93bmxvYWRfZHY2Y3hm/preview" />
+          src="https://res.cloudinary.com/dgdn1g9w6/image/upload/fl_preserve_transparency/v1749459327/download_z3sedt.jpg" />
           <br />
 
           <label htmlFor="coinInput" className="form-label">Nội dung Lời nhắn khi chuyển:</label> <br />

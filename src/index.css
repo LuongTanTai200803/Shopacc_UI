@@ -14,3 +14,8 @@ body {
 .main-content {
   flex: 1;
 }
+
+.custom-navbar {
+  background-color: #dee9de;
+  color: rgb(250, 250, 250);
+}
