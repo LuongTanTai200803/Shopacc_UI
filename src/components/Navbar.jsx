@@ -3,7 +3,7 @@ import '../index.css';
 
 function Navbar({ avatar, username, coin, isLoggedIn, handleLogout, setScreen }) {
   const navigate = useNavigate();
-  
+
   const Logout = () => {
     handleLogout()
     navigate("/");
