@@ -15,7 +15,7 @@ import avatar from './assets/images/default-avatar.png';
 import useAuth from "./hooks/useAuth";
 import Chatbox from "./components/Chatbox";
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL
+const apiUrl = import.meta.env.VITE_API_URL
 
 function App() {
 
