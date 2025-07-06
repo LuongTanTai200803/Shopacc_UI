@@ -96,20 +96,6 @@ export default function Home({apiUrl}) {
     }
   }, [location.state]);
 
-    
-    if (screen === "signup") 
-      return <Signup
-              onBack={() => setScreen("home")}
-              onSwitchToSignup={() => setScreen("signup")}
-              onSwitchToLogin={() => setScreen("login")}
-             />;
-    if (screen === "login") 
-      return <Login
-              onBack={() => setScreen("home")}
-              onSwitchToSignup={() => setScreen("signup")}
-              onSwitchToLogin={() => setScreen("login")}
-              onLoginSuccess={handleLoginSuccess} // Truyền callback
-             />;
     if (screen === "profile") {
       return <Profile setScreen={setScreen} />;
     }

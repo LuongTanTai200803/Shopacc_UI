@@ -1,4 +1,4 @@
-@charset "UTF-8";/*!
+@charset "UTF-8";html,body,#root{height:100%;margin:0}body{display:flex;flex-direction:column;min-height:100vh}.main-content{flex:1}.custom-navbar{background-color:#dee9de;color:#fafafa}/*!
 * Bootstrap  v5.3.6 (https://getbootstrap.com/)
 * Copyright 2011-2025 The Bootstrap Authors
 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)

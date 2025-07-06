@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 
 export default function useAuth() {
 
-  const [tokenExpired, setTokenExpired] = useState("");
+  const [tokenExpired, setTokenExpired] = useState(false);
   
   useEffect(() => {
       const checkToken = () => {
@@ -14,18 +14,22 @@ export default function useAuth() {
       //console.log("token:", token)  
           if (!token) {
               setTokenExpired(true);
-              console.log("Khong co token")
-              
+              console.log("Not Token")
               return;
           }
-            
           try {
               const decoded = jwtDecode(token);
               const currentTime = Math.floor(Date.now() / 1000);
-              
-              setTokenExpired(decoded.exp < currentTime); // Đặt true nếu hết hạn
+              const remaining = decoded.exp - currentTime
+
+              if (remaining <=0){
+                setTokenExpired(false)
+                console.log("Token expired. Logging out...");
+                localStorage.removeItem("token");
+              }
           } catch (err) {
               setTokenExpired(true); // Token lỗi cho hết hạn
+              localStorage.removeItem("token");
               console.error('Token error',err)
           }
       };
@@ -37,12 +41,4 @@ export default function useAuth() {
     }, []);
 
   return [tokenExpired, setTokenExpired];
-}
-
-
-function checkToken(){
-
-  if (useAuth())
-    return true
-  return false
 }
