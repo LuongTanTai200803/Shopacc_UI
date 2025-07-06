@@ -62,17 +62,18 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
       const idToken = await result.user.getIdToken();
 
       // Gửi idToken về Flask backend
-      const res = await fetch(`${apiUrl}/auth/google`, {
+      const response = await fetch(`${apiUrl}/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken })
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (res.ok) {
+      if (response.ok) {
         localStorage.setItem('token', data.access_token); // giả sử backend trả JWT
         localStorage.setItem('username', data.username || result.user.email);
+        localStorage.setItem('coin', data.coin);
         handleLoginSuccess();
       } else {
         setError(data.msg || data.message || "Đăng nhập Google thất bại");
@@ -128,8 +129,8 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
           Bạn chưa có tài khoản? Đăng ký ngay tại đây.
       </button>
               <br />
-      <button class="google-btn" onclick="handleGoogleLogin()">
-        <img src="https://developers.google.com/identity/images/g-logo.png" class="google-icon" alt="Google logo" />
+      <button className="google-btn" onClick={handleGoogleLogin}>
+        <img src="https://developers.google.com/identity/images/g-logo.png" className="google-icon" alt="Google logo" />
         <span>Đăng nhập bằng Google</span>
       </button>
         <br />
