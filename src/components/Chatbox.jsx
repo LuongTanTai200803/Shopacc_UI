@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import './Chatbox.css'; // File CSS để tạo kiểu cho chatbox
 
 // Lấy địa chỉ backend từ biến môi trường
-const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const Chatbox = () => {
   const [isOpen, setIsOpen] = useState(false);
