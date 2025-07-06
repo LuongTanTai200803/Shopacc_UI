@@ -22,7 +22,7 @@ function App() {
   const [screen, setScreen] = useState("home")
   const [user, setUser] = useState("")
   const token = localStorage.getItem('token');
-
+  
   const [isLoggedIn, setIsLoggedIn] = useState(
       localStorage.getItem("isLoggedIn") === "true"
     ); // Khởi tạo từ localStorage
