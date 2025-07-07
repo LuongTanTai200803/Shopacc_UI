@@ -22,6 +22,7 @@ const Chatbox = ({ apiUrl }) => {
   // Thiết lập kết nối Socket.IO
   useEffect(() => {
     // Chỉ kết nối một lần duy nhất
+    const SOCKET_URL = apiUrl || 'http://localhost:8000';
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_URL);
 
