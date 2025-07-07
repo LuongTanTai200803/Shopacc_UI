@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../firebaseConfig";
 
 export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedIn, setIsLoggedIn}) {
     const [username, setUsername] = useState("");
@@ -9,7 +10,7 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
 
     const navigate = useNavigate();
 
-    onLoginSuccess=() => {
+    const handleLoginSuccess=() => {
         setIsLoggedIn(true);
         setUser({
             username: localStorage.getItem("username"),
@@ -40,7 +41,7 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
           localStorage.setItem('coin', data.coin);
           console.log("Status code:", response.status);
             //setTimeout(() => { if (onBack) onBack(); // gọi callback để chuyển sang form login }, 2000);
-          if (onLoginSuccess) onLoginSuccess();
+          handleLoginSuccess();
         } else {
             console.error('Response status:', response.status); // thêm dòng này
             console.error('Response data:', data); // thêm dòng này
@@ -53,6 +54,37 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
 
 
   };
+
+    const handleGoogleLogin = async () => {
+    setError("");
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+
+      // Gửi idToken về Flask backend
+      const response = await fetch(`${apiUrl}/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.access_token); // giả sử backend trả JWT
+        localStorage.setItem('username', data.username || result.user.email);
+        localStorage.setItem('coin', data.coin);
+        handleLoginSuccess();
+      } else {
+        setError(data.msg || data.message || "Đăng nhập Google thất bại");
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError("Lỗi đăng nhập Google");
+    }
+  };
+
 
   return (
     <div className="card p-4 shadow bg-white" style={{ maxWidth: "400px", margin: "0 auto" }}>
@@ -95,6 +127,11 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
         </form> &nbsp;
       <button className="btn btn-success" onClick={() => navigate("/signup")}>
           Bạn chưa có tài khoản? Đăng ký ngay tại đây.
+      </button>
+              <br />
+      <button className="google-btn" onClick={handleGoogleLogin}>
+        <img src="https://developers.google.com/identity/images/g-logo.png" className="google-icon" alt="Google logo" />
+        <span>Đăng nhập bằng Google</span>
       </button>
         <br />
       <button className="btn btn-sm btn-outline-secondary mt-2" onClick={() => navigate("/")}>

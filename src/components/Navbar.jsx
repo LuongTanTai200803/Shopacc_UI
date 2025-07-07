@@ -1,16 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import '../index.css';
 
-function Navbar({ avatar, username, coin, isLoggedIn, handleLogout, setScreen }) {
+function Navbar({ avatar, isLoggedIn, handleLogout, setScreen }) {
   const navigate = useNavigate();
 
   const Logout = () => {
     handleLogout()
     navigate("/");
   }
-  //const username = localStorage.getItem('username');
-  //const coin = localStorage.getItem('coin');
-  console.log("coin: ", coin)
+
+
+  const username = localStorage.getItem('username');
+  const coin = localStorage.getItem('coin');
+
   //console.log("token: ", localStorage.getItem("token"))
   return ( <nav className="navbar navbar-expand-lg custom-navbar">
     <div className="container px-4 px-lg-5">
@@ -18,7 +20,7 @@ function Navbar({ avatar, username, coin, isLoggedIn, handleLogout, setScreen })
     
         {/* Avatar Dropdown */}
         <div className="ms-auto d-flex align-items-center">
-          {isLoggedIn && localStorage.getItem("token") ? (
+          {localStorage.getItem("token") ? (
             <div className="dropdown">
               <button
                 className="btn d-flex align-items-center dropdown-toggle"

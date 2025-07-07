@@ -88,6 +88,7 @@ export default function Home({ apiUrl }) {
   if (screen === "login") return <Login onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => setScreen("signup")} />;
   if (screen === "profile") return <Profile setScreen={setScreen} />;
 
+
   // Giao diện trang chủ
   return (
     <div className="bg-light">
