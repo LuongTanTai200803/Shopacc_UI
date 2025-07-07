@@ -100,7 +100,7 @@ function App() {
 
         <Footer />
       </Router>
-      <Chatbox />
+      <Chatbox apiUrl={apiUrl} />
     </div>
   );
 }
