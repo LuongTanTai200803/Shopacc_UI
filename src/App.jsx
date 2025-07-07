@@ -11,9 +11,9 @@ import Payment from "./pages/Payment";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useEffect, useState } from "react";
-
 import avatar from './assets/images/default-avatar.png';
 import useAuth from "./hooks/useAuth";
+import Chatbox from "./components/Chatbox";
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -100,6 +100,7 @@ function App() {
 
         <Footer />
       </Router>
+      <Chatbox />
     </div>
   );
 }

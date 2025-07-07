@@ -9,6 +9,7 @@ function Navbar({ avatar, isLoggedIn, handleLogout, setScreen }) {
     navigate("/");
   }
 
+
   const username = localStorage.getItem('username');
   const coin = localStorage.getItem('coin');
 
