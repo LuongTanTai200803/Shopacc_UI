@@ -7,7 +7,7 @@ import './Chatbox.css'; // File CSS để tạo kiểu cho chatbox
 // Lấy địa chỉ backend từ biến môi trường
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-const Chatbox = () => {
+const Chatbox = ({ apiUrl }) => { 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
