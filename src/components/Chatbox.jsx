@@ -7,7 +7,7 @@ import './Chatbox.css'; // File CSS để tạo kiểu cho chatbox
 // Lấy địa chỉ backend từ biến môi trường
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-const Chatbox = ({ apiUrl }) => { 
+const Chatbox = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -22,7 +22,6 @@ const Chatbox = ({ apiUrl }) => {
   // Thiết lập kết nối Socket.IO
   useEffect(() => {
     // Chỉ kết nối một lần duy nhất
-    const SOCKET_URL = apiUrl || 'http://localhost:8000';
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_URL);
 
@@ -54,7 +53,7 @@ const Chatbox = ({ apiUrl }) => {
         socketRef.current = null;
       }
     };
-  }, [apiUrl]);
+  }, []);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
