@@ -14,7 +14,7 @@ export default function useAuth() {
       //console.log("token:", token)  
           if (!token) {
               setTokenExpired(true);
-              console.log("Not Token")
+              
               return;
           }
           try {

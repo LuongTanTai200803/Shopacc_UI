@@ -23,7 +23,14 @@ const Chatbox = () => {
   useEffect(() => {
     // Chỉ kết nối một lần duy nhất
     if (!socketRef.current) {
-      socketRef.current = io(SOCKET_URL);
+      socketRef.current = io(SOCKET_URL, {
+      transports: ['websocket'],  // Ép chỉ dùng websocket
+      withCredentials: true,       // Nếu backend yêu cầu CORS gửi cookie
+      reconnectionAttempts: 10,   // Thử lại tối đa 10 lần nếu fail
+      reconnectionDelay: 2000,    // Mỗi lần cách 1 giây
+      timeout: 10000              // Chờ tối đa 20 giây để kết nối
+    });
+    
 
       socketRef.current.on('connect', () => {
         console.log('Đã kết nối tới chat server!');
