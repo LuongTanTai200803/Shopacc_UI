@@ -60,7 +60,7 @@ export default function Login({ onLoginSuccess, apiUrl, user, setUser, isLoggedI
     try {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
-
+      localStorage.setItem("token", idToken);
       // Gửi idToken về Flask backend
       const response = await fetch(`${apiUrl}/auth/google`, {
         method: "POST",

@@ -81,7 +81,7 @@ const Chatbox = () => {
 
   return (
     <div className="chatbox-container">
-      {isOpen && (
+      {isOpen ? (
         <div className="chat-window">
           <div className="chat-header">
             <p>ShopACC Hỗ trợ</p>
@@ -106,12 +106,13 @@ const Chatbox = () => {
             <button type="submit">Gửi</button>
           </form>
         </div>
-      )}
+       ) : (
       <button onClick={toggleChat} className="chat-toggle-button">
         💬
       </button>
-    </div>
+    )}
+  </div>
+  
   );
-};
-
+}
 export default Chatbox;

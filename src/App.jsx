@@ -90,11 +90,14 @@ function App() {
             apiUrl={apiUrl}
             />} />
 
-            <Route path="/payment" element={<Payment
-            isLoggedIn={isLoggedIn}
+            <Route path="/chitiet/:id" element={<Payment 
             apiUrl={apiUrl}
+            token={token}
+            isLoggedIn={isLoggedIn}
+            />} />
+
             
-             />} />
+            
           </Routes>
         </div>
 

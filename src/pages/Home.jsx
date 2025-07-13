@@ -11,6 +11,12 @@ import avatar from '../assets/images/default-avatar.png';
 export default function Home({ apiUrl }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [hero, setHero] = useState("");
+  const [skin, setSkin] = useState("");
+  const [desc, setDesc] = useState("");
+  const [priceMax, setPriceMax] = useState("");
 
   // Gom state người dùng vào một object cho dễ quản lý
   const [user, setUser] = useState({
@@ -25,6 +31,34 @@ export default function Home({ apiUrl }) {
   const [error, setError] = useState('');
   const [screen, setScreen] = useState("home");
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    const queryParams = new URLSearchParams();
+
+    if (hero) queryParams.append("hero", hero);
+    if (skin) queryParams.append("skin", skin);
+    if (desc) queryParams.append("desc", desc);
+    if (priceMax) queryParams.append("price_max", priceMax);
+
+    try {
+      const response = await fetch(`${apiUrl}/acc/?${queryParams.toString()}`);
+      console.log(`${apiUrl}/acc/?${queryParams.toString()}`);
+      const data = await response.json();
+      if (Array.isArray(data)) {
+      setAccounts(data);
+      console.log("Dữ liệu tài khoản:", data);
+      } else {
+        console.warn("Dữ liệu trả về không phải mảng:", data);
+        setAccounts([]);
+      }
+      
+    } catch (error) {
+      console.error("Search error", error);
+    }
+  };
+
+
+  
   // Hàm xử lý khi đăng nhập thành công
   const handleLoginSuccess = (loginData) => {
     // 1. Lưu vào localStorage để ghi nhớ
@@ -58,23 +92,6 @@ export default function Home({ apiUrl }) {
     navigate("/");
   };
 
-  // Fetch danh sách accounts
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        console.log("Đang gọi đến API tại:", apiUrl); 
-        const response = await fetch(`${apiUrl}/acc/`); 
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        setAccounts(data);
-        setError(null);
-      } catch (error) {
-        console.error('Error fetching accounts:', error.message);
-        setError('Không thể kết nối tới server.');
-      }
-    };
-    fetchAccounts();
-  }, [apiUrl]);
 
   // Xử lý chuyển màn hình
   useEffect(() => {
@@ -88,11 +105,28 @@ export default function Home({ apiUrl }) {
   if (screen === "login") return <Login onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => setScreen("signup")} />;
   if (screen === "profile") return <Profile setScreen={setScreen} />;
 
-
+    // Fetch danh sách accounts
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        console.log("Đang gọi đến API tại:", apiUrl); 
+        const response = await fetch(`${apiUrl}/acc/`); 
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        setAccounts(data);
+        setError(null);
+        console.log("Dữ liệu tài khoản:", data);
+      } catch (error) {
+        console.error('Error fetching accounts:', error.message);
+        setError('Không thể kết nối tới server.');
+      }
+    };
+    fetchAccounts();
+  }, [apiUrl]);
+  
   // Giao diện trang chủ
   return (
     <div className="bg-light">
-      
 
       <header className="bg-dark py-5">
         <div className="container px-4 px-lg-5 my-5">
@@ -102,6 +136,19 @@ export default function Home({ apiUrl }) {
           </div>
         </div>
       </header>
+
+    <section className="py-3 bg-light">
+    <div className="container">
+      <form onSubmit={handleSearch} className="d-flex justify-content-center">
+        <input type="number" className="form-control" placeholder="Hero" value={hero} onChange={(e) => setHero(e.target.value)} />
+        <input type="number" className="form-control" placeholder="Skin" value={skin} onChange={(e) => setSkin(e.target.value)} />
+        <input className="form-control" placeholder="Mô tả" value={desc} onChange={(e) => setDesc(e.target.value)} />
+        <input type="number" className="form-control" placeholder="Giá tối đa" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} />
+        <button className="btn btn-primary" type="submit">Lọc</button>
+        
+      </form>
+    </div>
+    </section>
 
       <section className="py-5">
         <div className="container px-4 px-lg-5">
@@ -119,13 +166,15 @@ export default function Home({ apiUrl }) {
 
 // Component ProductCard
 function ProductCard({ id, name, price, image_url, status, hero, skin, navigate }) {
+
   const handleClick = () => {
-    const product = { id, name, price, image_url, hero, skin };
-    navigate("/Payment", { state: { productDetails: product } });
+    navigate(`/chitiet/${id}`);       
   };
 
   return (
+
     <div className="col mb-5">
+    
       <div className="card h-100">
         <img className="card-img-top" src={image_url} alt={name || 'Game Account'} />
         <div className="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 rounded small">
@@ -141,7 +190,7 @@ function ProductCard({ id, name, price, image_url, status, hero, skin, navigate 
         </div>
         <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
           <div className="text-center">
-            <a onClick={handleClick} className="btn btn-outline-dark mt-auto" href="#">
+            <a onClick={handleClick} className="btn btn-outline-dark mt-auto" >
               Xem chi tiết
             </a>
           </div>
