@@ -107,7 +107,11 @@ const Chatbox = () => {
           </form>
         </div>
        ) : (
-      <button onClick={toggleChat} className="chat-toggle-button">
+      <button onClick={toggleChat} className="chat-toggle-button custom-chat-button btn btn-primary rounded-pill shadow-lg d-flex align-items-center justify-content-center">
+        Chat với chúng tôi
+        {/* Placeholder cho Icon Chat - Bạn có thể dùng Font Awesome hoặc Bootstrap Icons */}
+        {/* Ví dụ: <i className="fas fa-comments"></i> */}
+        
         💬
       </button>
     )}

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import '../index.css';
+import { useEffect } from "react";
 
 function Navbar({ avatar, isLoggedIn, handleLogout, setScreen }) {
   const navigate = useNavigate();
@@ -8,11 +9,11 @@ function Navbar({ avatar, isLoggedIn, handleLogout, setScreen }) {
     handleLogout()
     navigate("/");
   }
-
-
   const username = localStorage.getItem('username');
   const coin = localStorage.getItem('coin');
-
+  useEffect(() => {
+   
+  }, [coin]);
   //console.log("token: ", localStorage.getItem("token"))
   return ( <nav className="navbar navbar-expand-lg custom-navbar">
     <div className="container px-4 px-lg-5">

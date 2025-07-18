@@ -39,7 +39,7 @@ export default function Payment({ apiUrl, isLoggedIn, token }) {
         setErr(e.message);
       }
     })();
-  }, [id]);
+  }, [id], [token]);
   console.log("acc", acc)
   
 
@@ -54,6 +54,7 @@ export default function Payment({ apiUrl, isLoggedIn, token }) {
         acc={acc}
         isLoggedIn={isLoggedIn}
         apiUrl={apiUrl}
+        token={token}
         onBack={() => setMode("view")}
       />
     );
@@ -132,7 +133,7 @@ export default function Payment({ apiUrl, isLoggedIn, token }) {
 
 /* Thanh toán */
 function Purchase ({ isLoggedIn, onBack ,tokenExpired, token, user_id, navigate, apiUrl, id, price, acc}) {
-  
+
   const [error, setError] = useState(""); // Thêm state để lưu lỗi
   id = acc.id
   price = acc.price
@@ -158,6 +159,7 @@ function Purchase ({ isLoggedIn, onBack ,tokenExpired, token, user_id, navigate,
                // gọi callback để chuyển sang form login
             }, 2000);
         } else {
+            
             console.error('Response status:', response.status); // thêm dòng này
             console.error('Response data:', data); // thêm dòng này
             setError(data.msg || data.message || 'Mua thất bại');

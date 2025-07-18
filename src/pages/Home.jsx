@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 // Import các component khác
-import Profile from './Profile';
+import Profile from '../components/Profile/Profile';
 import Signup from './Signup';
 import Login from './Login';
 import Navbar from "../components/Navbar";
@@ -109,13 +109,13 @@ export default function Home({ apiUrl }) {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        console.log("Đang gọi đến API tại:", apiUrl); 
+        //console.log("Đang gọi đến API tại:", apiUrl); 
         const response = await fetch(`${apiUrl}/acc/`); 
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setAccounts(data);
         setError(null);
-        console.log("Dữ liệu tài khoản:", data);
+        //console.log("Dữ liệu tài khoản:", data);
       } catch (error) {
         console.error('Error fetching accounts:', error.message);
         setError('Không thể kết nối tới server.');

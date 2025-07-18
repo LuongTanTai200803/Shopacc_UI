@@ -139,3 +139,20 @@
 .chat-input-form button:hover {
   background-color: #0b5ed7;
 }
+
+.custom-chat-button {
+  /* Đặt min-width để đảm bảo nút đủ dài */
+  min-width: 180px; /* Điều chỉnh giá trị này theo ý muốn */
+  padding-left: 1.5rem !important; /* Ví dụ: padding trái 1.5rem */
+  padding-right: 1.5rem !important; /* Ví dụ: padding phải 1.5rem */
+  /* Hoặc dùng padding: 0.75rem 1.5rem; để đặt cả chiều dọc và ngang */
+
+  /* Đảm bảo nội dung không xuống dòng */
+  white-space: nowrap;
+}
+
+/* Tùy chỉnh hover/active nếu cần */
+.custom-chat-button:hover {
+  /* Các kiểu khi hover */
+  opacity: 0.9;
+}
