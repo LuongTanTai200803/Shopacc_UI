@@ -47,12 +47,12 @@ export default function Footer() {
           {/* Cột 5: Hỗ trợ */}
            <div>
             <h5 className="fs-5 fw-semibold mb-3 pb-2 border-bottom border-secondary">Liên Hệ</h5>
-          <div className="ws-text-sm ws-text-red-500 ws-font-bold">
-            <a href="https://m.me/100013238611790" target="_blank">
-              <i className="chat-toggle-button custom-chat-button btn btn-primary rounded-pill shadow-lg d-flex align-items-center justify-content-center"> Message</i>
-            
-            </a>
-          </div>
+            <div>
+                <a href="https://m.me/100013238611790" target="_blank" 
+                   className="btn btn-primary rounded-pill shadow-sm d-inline-flex align-items-center px-4 py-2">
+                   Message
+                </a>
+            </div>
         </div>
                   
         {/* Đường kẻ ngang ngăn cách phần trên và copyright */}
