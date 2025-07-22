@@ -1,4 +1,4 @@
-// File: src/components/Chatbox.jsx
+// File: src/components/Chatbox.jsx (Nút bấm đã được cập nhật)
 
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
@@ -13,64 +13,88 @@ const Chatbox = () => {
   const [inputValue, setInputValue] = useState('');
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const audioRef = useRef(null);
+  const [playbackState, setPlaybackState] = useState('idle'); // 'idle', 'playing', 'paused'
 
   // Tự động cuộn xuống tin nhắn mới nhất
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Thiết lập kết nối Socket.IO
+  // useEffect để phát âm thanh từ URL của gTTS
   useEffect(() => {
-    // Chỉ kết nối một lần duy nhất
-    if (!socketRef.current) {
+    const lastMessage = messages[messages.length - 1];
+
+    if (lastMessage && lastMessage.from === 'bot' && lastMessage.audioUrl) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      
+      const newAudio = new Audio(lastMessage.audioUrl);
+      newAudio.onplay = () => setPlaybackState('playing');
+      newAudio.onpause = () => setPlaybackState('paused');
+      newAudio.onended = () => setPlaybackState('idle');
+
+      newAudio.play().catch(error => {
+        console.error("Lỗi khi tự động phát âm thanh:", error);
+        setPlaybackState('idle');
+      });
+      
+      audioRef.current = newAudio;
+    }
+  }, [messages]);
+
+  // Thiết lập và dọn dẹp kết nối Socket.IO khi mở/đóng chatbox
+  useEffect(() => {
+    if (isOpen && !socketRef.current) {
       socketRef.current = io(SOCKET_URL, {
-      transports: ['websocket'],  // Ép chỉ dùng websocket
-      withCredentials: true,       // Nếu backend yêu cầu CORS gửi cookie
-      reconnectionAttempts: 10,   // Thử lại tối đa 10 lần nếu fail
-      reconnectionDelay: 2000,    // Mỗi lần cách 1 giây
-      timeout: 10000              // Chờ tối đa 20 giây để kết nối
-    });
-    
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 2000,
+        timeout: 10000,
+        transports: ['websocket'],
+        withCredentials: true,
+      });
 
       socketRef.current.on('connect', () => {
         console.log('Đã kết nối tới chat server!');
-        // Thêm tin nhắn chào mừng khi kết nối thành công
-        setMessages([{ from: 'bot', text: 'Chào bạn, tôi có thể giúp gì cho bạn?' }]);
+        setMessages([{ from: 'bot', text: 'Chào bạn, tôi có thể giúp gì cho bạn?', audioUrl: null }]);
       });
 
-      // Lắng nghe tin nhắn từ bot
       socketRef.current.on('bot_reply', (data) => {
-        setMessages((prevMessages) => [...prevMessages, { from: 'bot', text: data.message }]);
+        setMessages((prevMessages) => [...prevMessages, { from: 'bot', text: data.message, audioUrl: data.audioUrl }]);
       });
       
-      // Lắng nghe tin nhắn từ admin
       socketRef.current.on('live_reply', (data) => {
-        setMessages((prevMessages) => [...prevMessages, { from: 'bot', text: data.message }]);
+        setMessages((prevMessages) => [...prevMessages, { from: 'bot', text: data.message, audioUrl: null }]);
       });
 
       socketRef.current.on('disconnect', () => {
         console.log('Đã mất kết nối với chat server.');
       });
-    }
-
-    // Dọn dẹp kết nối khi component bị hủy
-    return () => {
-      if (socketRef.current && socketRef.current.connected) {
+    } else if (!isOpen && socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
-      }
-    };
-  }, []);
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+        }
+        setPlaybackState('idle');
+    }
+    
+    return () => {
+        if (socketRef.current) {
+            socketRef.current.disconnect();
+        }
+    }
+  }, [isOpen]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (inputValue.trim() && socketRef.current) {
-      const userMessage = { from: 'user', text: inputValue };
+      const userMessage = { from: 'user', text: inputValue, audioUrl: null };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-      
-      // Gửi tin nhắn lên server
       socketRef.current.emit('user_message', { message: inputValue });
-      
       setInputValue('');
     }
   };
@@ -79,18 +103,35 @@ const Chatbox = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleTogglePlayback = () => {
+      if (!audioRef.current) return;
+      if (playbackState === 'playing') {
+          audioRef.current.pause();
+      } else if (playbackState === 'paused') {
+          audioRef.current.play();
+      }
+  };
+
   return (
     <div className="chatbox-container">
       {isOpen ? (
         <div className="chat-window">
           <div className="chat-header">
             <p>ShopACC Hỗ trợ</p>
+            {playbackState !== 'idle' && (
+                <button onClick={handleTogglePlayback} className="playback-btn" title={playbackState === 'playing' ? 'Tạm dừng' : 'Tiếp tục'}>
+                    {playbackState === 'playing' 
+                        ? <i className="bi bi-pause-fill"></i> 
+                        : <i className="bi bi-play-fill"></i>
+                    }
+                </button>
+            )}
             <button onClick={toggleChat} className="close-btn">-</button>
           </div>
           <div className="chat-messages">
             {messages.map((msg, index) => (
               <div key={index} className={`message ${msg.from}`}>
-                <p>{msg.text}</p>
+                <p dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, '<br />') }} />
               </div>
             ))}
             <div ref={messagesEndRef} />
@@ -107,16 +148,14 @@ const Chatbox = () => {
           </form>
         </div>
        ) : (
-      <button onClick={toggleChat} className="chat-toggle-button custom-chat-button btn btn-primary rounded-pill shadow-lg d-flex align-items-center justify-content-center">
-        Chat với chúng tôi
-        {/* Placeholder cho Icon Chat - Bạn có thể dùng Font Awesome hoặc Bootstrap Icons */}
-        {/* Ví dụ: <i className="fas fa-comments"></i> */}
-        
-        💬
-      </button>
-    )}
-  </div>
-  
+        // ---> NÚT BẤM ĐÃ ĐƯỢC THAY ĐỔI Ở ĐÂY <---
+        <button onClick={toggleChat} className="chat-toggle-button custom-chat-button btn btn-primary rounded-pill shadow-lg d-flex align-items-center justify-content-center">
+          <span className="me-3">Chat với chúng tôi</span>
+          <i className="bi bi-chat-dots-fill fs-5"></i>
+        </button>
+      )}
+    </div>
   );
-}
+};
+
 export default Chatbox;
