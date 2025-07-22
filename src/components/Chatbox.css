@@ -7,24 +7,17 @@
   z-index: 1000;
 }
 
+/* --- ĐÃ CẬP NHẬT --- */
+/* Class này giờ là style nền cho nút mở chat. */
+/* Giao diện chính (màu sắc, hình dạng) được điều khiển bởi các class của Bootstrap */
+/* trong file JSX (ví dụ: btn, btn-primary, rounded-pill). */
 .chat-toggle-button {
-  background-color: #0d6efd;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 28px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   transition: transform 0.2s ease-in-out;
 }
 
 .chat-toggle-button:hover {
-  transform: scale(1.1);
+  /* Hiệu ứng phóng to nhẹ nhàng hơn cho nút lớn */
+  transform: scale(1.05);
 }
 
 .chat-window {
@@ -38,6 +31,7 @@
   overflow: hidden;
   animation: slide-up 0.3s ease-out;
 }
+
 
 @keyframes slide-up {
   from {
@@ -55,7 +49,7 @@
   color: white;
   padding: 15px;
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between;  <-- Thuộc tính này không cần nữa */
   align-items: center;
 }
 
@@ -139,20 +133,20 @@
 .chat-input-form button:hover {
   background-color: #0b5ed7;
 }
-
-.custom-chat-button {
-  /* Đặt min-width để đảm bảo nút đủ dài */
-  min-width: 180px; /* Điều chỉnh giá trị này theo ý muốn */
-  padding-left: 1.5rem !important; /* Ví dụ: padding trái 1.5rem */
-  padding-right: 1.5rem !important; /* Ví dụ: padding phải 1.5rem */
-  /* Hoặc dùng padding: 0.75rem 1.5rem; để đặt cả chiều dọc và ngang */
-
-  /* Đảm bảo nội dung không xuống dòng */
-  white-space: nowrap;
+.playback-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;  /* Kích thước icon */
+  cursor: pointer;
+  margin-left: auto; /* Quan trọng: Đẩy nút về phía trái */
+  padding: 0 10px;
+  transition: transform 0.2s, opacity 0.2s;
+  display: flex;
+  align-items: center;
 }
 
-/* Tùy chỉnh hover/active nếu cần */
-.custom-chat-button:hover {
-  /* Các kiểu khi hover */
-  opacity: 0.9;
+.playback-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.1); /* Hiệu ứng phóng to khi di chuột */
 }
